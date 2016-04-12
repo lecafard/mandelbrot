@@ -51,7 +51,7 @@ unsigned char stepsToGreen(int steps) {
     if (deg < 60) {
         green = (255 / 60) * deg;
     } else if (deg < 180) {
-        green = 255;
+        green = 255 * deg;
     } else if (deg < 240) {
         green = 1020 - (255 / 60) * deg;
     } else {
