@@ -2,10 +2,8 @@
 
 #include "pixelColor.h"
 
-#define MAX_ITERATIONS 255
-
-unsigned char stepsToRed(int steps) {
-    double deg = (360.0 / 255.0) * 64 * (log(steps) / log(4));
+unsigned char stepsToBlue(int steps) {
+    double deg = (360.0 / 255.0) * 32 * (log(steps) / log(2));
     unsigned char red;
 
     if (deg < 60) {
@@ -25,8 +23,8 @@ unsigned char stepsToRed(int steps) {
     return red;
 }
 
-unsigned char stepsToBlue(int steps) {
-    double deg = (360.0 / 255.0) * 64 * (log(steps) / log(4));
+unsigned char stepsToRed(int steps) {
+    double deg = (360.0 / 255.0) * 32 * (log(steps) / log(2));
     unsigned char blue;
 
     if (deg < 120) {
@@ -45,13 +43,13 @@ unsigned char stepsToBlue(int steps) {
 }
 
 unsigned char stepsToGreen(int steps) {
-    double deg = (360.0 / 255.0) * 64 * (log(steps) / log(4));
+    double deg = (360.0 / 255.0) * 32 * (log(steps) / log(2));
     unsigned char green;
 
     if (deg < 60) {
         green = (255 / 60) * deg;
     } else if (deg < 180) {
-        green = 255 * deg;
+        green = 255;
     } else if (deg < 240) {
         green = 1020 - (255 / 60) * deg;
     } else {
