@@ -1,3 +1,9 @@
+// Ram Kaniyur, quadrupleslap, z5122495
+// Mark, UNSW
+// 16 April, 2016
+// A HTTP server for rendering the Mandelbrot fractal.
+
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +34,10 @@
 #define REQ_SIZE 1000
 #define PATH_SIZE 100
 
+typedef unsigned char  bits8;
+typedef unsigned short bits16;
+typedef unsigned int   bits32;
+
 void startServer(int port);
 int makeSocket(int port);
 int waitForConnection(int sock);
@@ -37,22 +47,27 @@ void mandelBitmap(char *image, double x, double y, int zoom);
 void bitmapHeader(char *image);
 
 int main(int argc, char *argv[]) {
-	startServer(SERVER_PORT);
-	return EXIT_SUCCESS;
+    startServer(SERVER_PORT);
+    return EXIT_SUCCESS;
 }
 
 void startServer(int port) {
-	int parsedValues;
+    // Make sure types have the required size.
+    assert(sizeof(bits8)  == 1);
+    assert(sizeof(bits16) == 2);
+    assert(sizeof(bits32) == 4);
+
+    int parsedValues;
 
     #ifdef _WIN32
         WSADATA wsaData;
         WSAStartup(0x0202, &wsaData);
     #endif
 
-	int sock = makeSocket(port);
+    int sock = makeSocket(port);
 
-	char req[REQ_SIZE + 1];
-	req[REQ_SIZE] = 0;
+    char req[REQ_SIZE + 1];
+    req[REQ_SIZE] = 0;
 
     while (1) {
         int conn = waitForConnection(sock);
@@ -60,53 +75,56 @@ void startServer(int port) {
         recv(conn, req, REQ_SIZE, 0);
 
         // Cut the string off to one line.
-		char *endOfLine = strchr(req, '\n');
+        char *endOfLine = strchr(req, '\n');
         if (endOfLine != NULL) {
-			*endOfLine = '\0';
+            *endOfLine = '\0';
         }
 
-		// Find the path.
-		char path[PATH_SIZE + 1];
-		parsedValues = sscanf(req, "GET %s HTTP/1.1", path);
-		
-		if (parsedValues == 1) {
+        // Find the path.
+        char path[PATH_SIZE + 1];
+        parsedValues = sscanf(req, "GET %s HTTP/1.1", path);
+
+        if (parsedValues == 1) {
             if (strcmp(path, "/") == 0) {
-				// Homepage
-				char *msg =
+                // Homepage
+                char *msg =
                     "HTTP/1.1 200 OK\r\n"
                     "Content-Type: text/html\r\n"
                     "\r\n"
                     "<!DOCTYPE html>\n"
                     "<script src=\"http://almondbread.cse.unsw.edu.au/tiles.js\"></script>\n";
-				send(conn, msg, strlen(msg), 0);
+                send(conn, msg, strlen(msg), 0);
             } else {
-				double x, y;
-				int zoom;
+                double x, y;
+                int zoom;
 
-				parsedValues = sscanf(
-					path, "/tile_x%lf_y%lf_z%d.bmp",
-					&x, &y, &zoom);
+                parsedValues = sscanf(
+                    path, "/tile_x%lf_y%lf_z%d.bmp",
+                    &x, &y, &zoom);
 
                 if (parsedValues == 3) {
                     char *msg =
-						"HTTP/1.0 200 OK\r\n"
+                        "HTTP/1.0 200 OK\r\n"
                         "Content-Type: image/bmp\r\n"
                         "\r\n";
                     send(conn, msg, strlen(msg), 0);
 
                     char image[FILE_SIZE];
                     mandelBitmap(image, x, y, zoom);
-					send(conn, image, FILE_SIZE, 0);
+                    send(conn, image, FILE_SIZE, 0);
                 } else {
-                    printf("TODO: Send 404.\n");
+                    // HTTP Error 404.
                 }
             }
         } else {
-            printf("TODO: Send bad request something.\n");
+            // HTTP Error 400.
         }
 
         closeSocket(conn);
     }
+
+    // Closing the socket is unnecessary, because the OS will
+    // immediately recover it thanks to SO_REUSEADDR.
 }
 
 int makeSocket(int port) {
@@ -127,9 +145,9 @@ int makeSocket(int port) {
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(port);
 
-	bind(sock,
-		(struct sockaddr *) &addr,
-		sizeof(addr));
+    bind(sock,
+        (struct sockaddr *) &addr,
+        sizeof(addr));
 
     return sock;
 }
@@ -150,7 +168,7 @@ int waitForConnection(int sock) {
 
 void closeSocket(int sock) {
     #ifdef _WIN32
-	    closesocket(sock);
+        closesocket(sock);
     #else
         close(sock);
     #endif
@@ -185,89 +203,41 @@ void mandelBitmap(char *image, double x, double y, int zoom) {
 }
 
 void bitmapHeader(char *image) {
-    // Signature
+    // This function is equivalent to the one in chessboard.c,
+    // and unfortunately doesn't work on big-endian architectures,
+    // because we haven't learnt about bit-shifting yet.
+
+    // BMP Signature
     image[0] = 0x42;
     image[1] = 0x4D;
-
     // File Size
-    image[2] = FILE_SIZE & 0xFF;
-    image[3] = (FILE_SIZE >> 8) & 0xFF;
-    image[4] = (FILE_SIZE >> 16) & 0xFF;
-    image[5] = (FILE_SIZE >> 24) & 0xFF;
-
+    *(bits32*)(image + 2) = FILE_SIZE;
     // Reserved
-    image[6] = 0;
-    image[7] = 0;
-    image[8] = 0;
-    image[9] = 0;
-
+    *(bits32*)(image + 6) = 0;
     // File Offset to Pixel Array
-    image[10] = BMP_HEADER_SIZE & 0xFF;
-    image[11] = (BMP_HEADER_SIZE >> 8) & 0xFF;
-    image[12] = (BMP_HEADER_SIZE >> 16) & 0xFF;
-    image[13] = (BMP_HEADER_SIZE >> 24) & 0xFF;
-
+    *(bits32*)(image + 10) = BMP_HEADER_SIZE;
     // DIB Header Size
-    image[14] = DIB_HEADER_SIZE & 0xFF;
-    image[15] = (DIB_HEADER_SIZE >> 8) & 0xFF;
-    image[16] = (DIB_HEADER_SIZE >> 16) & 0xFF;
-    image[17] = (DIB_HEADER_SIZE >> 24) & 0xFF;
-
+    *(bits32*)(image + 14) = DIB_HEADER_SIZE;
     // Image Width
-    image[18] = IMAGE_WIDTH & 0xFF;
-    image[19] = (IMAGE_WIDTH >> 8) & 0xFF;
-    image[20] = (IMAGE_WIDTH >> 16) & 0xFF;
-    image[21] = (IMAGE_WIDTH >> 24) & 0xFF;
-
+    *(bits32*)(image + 18) = IMAGE_WIDTH;
     // Image Height
-    image[22] = IMAGE_HEIGHT & 0xFF;
-    image[23] = (IMAGE_HEIGHT >> 8) & 0xFF;
-    image[24] = (IMAGE_HEIGHT >> 16) & 0xFF;
-    image[25] = (IMAGE_HEIGHT >> 24) & 0xFF;
-
+    *(bits32*)(image + 22) = IMAGE_HEIGHT;
     // Planes
-    image[26] = 1;
-    image[27] = 0;
-
+    *(bits16*)(image + 26) = 1;
     // Bits per Pixel
-    image[28] = (PIXEL_SIZE * 8) & 0xFF;
-    image[29] = ((PIXEL_SIZE * 8) >> 8) & 0xFF;
-
+    *(bits16*)(image + 28) = PIXEL_SIZE * 8;
     // Compression
-    image[30] = 0;
-    image[31] = 0;
-    image[32] = 0;
-    image[33] = 0;
-
+    *(bits32*)(image + 30) = 0;
     // Image Size
-    image[34] = IMAGE_SIZE & 0xFF;
-    image[35] = (IMAGE_SIZE >> 8) & 0xFF;
-    image[36] = (IMAGE_SIZE >> 16) & 0xFF;
-    image[37] = (IMAGE_SIZE >> 24) & 0xFF;
-
+    *(bits32*)(image + 34) = IMAGE_SIZE;
     // X Pixels Per Meter
-    image[38] = 0x13;
-    image[39] = 0xB;
-    image[40] = 0;
-    image[41] = 0;
-
+    *(bits32*)(image + 38) = 0xB13;
     // Y Pixels Per Meter
-    image[42] = 0x13;
-    image[43] = 0xB;
-    image[44] = 0;
-    image[45] = 0;
-
+    *(bits32*)(image + 42) = 0xB13;
     // Color Table Color Count
-    image[46] = 0;
-    image[47] = 0;
-    image[48] = 0;
-    image[49] = 0;
-
-    // Important Color COunt
-    image[50] = 0;
-    image[51] = 0;
-    image[52] = 0;
-    image[53] = 0;
+    *(bits32*)(image + 46) = 0;
+    // Important Color Count
+    *(bits32*)(image + 50) = 0;
 }
 
 int escapeSteps(double inX, double inY) {
