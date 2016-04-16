@@ -3,13 +3,11 @@
 // 16 April, 2016
 // Some nice colors for the Mandelbrot fractal.
 
-#include <math.h>
-
 #include "pixelColor.h"
 
 unsigned char stepsToShade(int steps) {
     if (steps == 1) return 0;
-    return (steps >> 1) + 128;
+    return (steps / 2) + 128;
 }
 
 unsigned char stepsToRed(int steps) {
