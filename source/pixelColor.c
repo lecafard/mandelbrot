@@ -2,59 +2,38 @@
 
 #include "pixelColor.h"
 
-unsigned char stepsToBlue(int steps) {
-    double deg = (360.0 / 255.0) * 32 * (log(steps) / log(2));
-    unsigned char red;
-
-    if (deg < 60) {
-        red = 255;
-    } else if (deg < 120) {
-        red = 510 - (255 / 60) * deg;
-    } else if (deg < 240) {
-        red = 0;
-    } else if (deg < 300) {
-        red = (255 / 60) * deg - 1020;
-    } else if (deg < 360) {
-        red = 255;
-    } else {
-        red = 0;
-    }
-
-    return red;
-}
+#define MAX_ITERATIONS 256
+#define NUM_COLORS 10
 
 unsigned char stepsToRed(int steps) {
-    double deg = (360.0 / 255.0) * 32 * (log(steps) / log(2));
-    unsigned char blue;
-
-    if (deg < 120) {
-        blue = 0;
-    } else if (deg < 180) {
-        blue = (255 / 60) * deg - 510;
-    } else if (deg < 300) {
-        blue = 255;
-    } else if (deg < 360) {
-        blue = 1530 - (255 / 60) * deg;
+    unsigned char intensity;
+    if(steps == MAX_ITERATIONS) {
+        intensity = 0;
     } else {
-        blue = 0;
+        intensity = 3 * 32 * (log(steps) / log(2));
     }
 
-    return blue;
+    return intensity;
+}
+
+unsigned char stepsToBlue(int steps) {
+    unsigned char intensity;
+    if(steps == MAX_ITERATIONS) {
+        intensity = 0;
+    } else {
+        intensity = 4 * 32 * (log(steps) / log(2));
+    }
+
+    return intensity;   
 }
 
 unsigned char stepsToGreen(int steps) {
-    double deg = (360.0 / 255.0) * 32 * (log(steps) / log(2));
-    unsigned char green;
-
-    if (deg < 60) {
-        green = (255 / 60) * deg;
-    } else if (deg < 180) {
-        green = 255;
-    } else if (deg < 240) {
-        green = 1020 - (255 / 60) * deg;
+    unsigned char intensity;
+    if(steps == MAX_ITERATIONS) {
+        intensity = 0;
     } else {
-        green = 0;
+        intensity = 5 * 32 * (log(steps) / log(2));
     }
 
-    return green;
+    return intensity;
 }
