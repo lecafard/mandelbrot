@@ -5,34 +5,48 @@
 
 #include "pixelColor.h"
 
-unsigned char stepsToShade(int steps) {
-    if (steps == 1) return 0;
-    return (steps / 2) + 128;
-}
+#define MAX_ITERATIONS 256
+#define NUM_COLORS 5
 
 unsigned char stepsToRed(int steps) {
-    if (steps == 256)
-        return 255;
-    else if (steps % 3 != 2)
-        return stepsToShade(steps);
-    else
-        return 0;
+    // Red component of nth color.
+    unsigned char reds[NUM_COLORS] = {0, 0, 255, 232, 255};
+
+    unsigned char intensity = 0;
+    if (steps == MAX_ITERATIONS) {
+        intensity = 255;
+    } else {
+        intensity = reds[steps % NUM_COLORS];
+    }
+
+    return intensity;
 }
 
 unsigned char stepsToGreen(int steps) {
-    if (steps == 256)
-        return 255;
-    else if (steps % 3 != 1)
-        return stepsToShade(steps);
-    else
-        return 0;
+    // Green component of nth color.
+    unsigned char greens[NUM_COLORS] = {66, 255, 0, 0, 0};
+
+    unsigned char intensity = 0;
+    if (steps == MAX_ITERATIONS) {
+        intensity = 255;
+    } else {
+        intensity = greens[steps % NUM_COLORS];
+    }
+
+    return intensity;
 }
 
 unsigned char stepsToBlue(int steps) {
-    if (steps == 256)
-        return 255;
-    else if (steps % 3 != 0)
-        return stepsToShade(steps);
-    else
-        return 0;
+    // Blue component of nth color.
+    unsigned char blues[NUM_COLORS] = {232, 158, 252, 136, 2};
+
+    unsigned char intensity = 0;
+    if (steps == MAX_ITERATIONS) {
+        intensity = 255;
+    } else {
+        intensity = blues[steps % NUM_COLORS];
+    }
+
+    return intensity;
 }
+
