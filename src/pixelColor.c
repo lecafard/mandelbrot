@@ -1,4 +1,5 @@
 // Ram Kaniyur, quadrupleslap, z5122495
+// Tom Nguyen, tomnguyen, z5122502
 // Mark, UNSW
 // 16 April, 2016
 // Some nice colors for the Mandelbrot fractal.
