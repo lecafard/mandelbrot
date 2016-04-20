@@ -7,65 +7,39 @@
 
 unsigned char stepsToRed(int steps) {
     unsigned char intensity = 0;
+    unsigned char colors[5] = {0, 0, 255, 232, 255};
     if(steps == MAX_ITERATIONS) {
         intensity = 255;
     } else {
         unsigned char mod = steps % NUM_COLORS;
-        if(mod == 0) {
-            intensity = 0;
-        } else if (mod == 1) {
-            intensity = 0;
-        } else if (mod == 2) {
-            intensity = 255;
-        } else if (mod == 3) {
-            intensity = 232;
-        } else if (mod == 4) {
-            intensity = 255;
-        }
+        intensity = colors[mod];
     }
+
 
     return intensity;
 }
 
-unsigned char stepsToBlue(int steps) {
+unsigned char stepsToGreen(int steps) {
     unsigned char intensity = 0;
+    unsigned char colors[5] = {232, 158, 252, 136, 2};
     if(steps == MAX_ITERATIONS) {
         intensity = 255;
     } else {
         unsigned char mod = steps % NUM_COLORS;
-        if(mod == 0) {
-            intensity = 232;
-        } else if (mod == 1) {
-            intensity = 158;
-        } else if (mod == 2) {
-            intensity = 252;
-        } else if (mod == 3) {
-            intensity = 136;
-        } else if (mod == 4) {
-            intensity = 2;
-        }
+        intensity = colors[mod];
     }
 
     return intensity;   
 }
 
-unsigned char stepsToGreen(int steps) {
+unsigned char stepsToBlue(int steps) {
     unsigned char intensity = 0;
+    unsigned char colors[5] = {66, 255, 0, 0, 0};
     if(steps == MAX_ITERATIONS) {
         intensity = 255;
     } else {
         unsigned char mod = steps % NUM_COLORS;
-        if(mod == 0) {
-            intensity = 66;
-        } else if (mod == 1) {
-            intensity = 255;
-        } else if (mod == 2) {
-            intensity = 0;
-        } else if (mod == 3) {
-            intensity = 0;
-        } else if (mod == 4) {
-            intensity = 0;
-        }
+        intensity = colors[mod];
     }
 
     return intensity;
