@@ -212,33 +212,33 @@ void bitmapHeader(char *image) {
     image[0] = 0x42;
     image[1] = 0x4D;
     // File Size
-    *(bits32*)(image + 2) = FILE_SIZE;
+    *(bits32*)(&image[2]) = FILE_SIZE;
     // Reserved
-    *(bits32*)(image + 6) = 0;
+    *(bits32*)(&image[6]) = 0;
     // File Offset to Pixel Array
-    *(bits32*)(image + 10) = BMP_HEADER_SIZE;
+    *(bits32*)(&image[10]) = BMP_HEADER_SIZE;
     // DIB Header Size
-    *(bits32*)(image + 14) = DIB_HEADER_SIZE;
+    *(bits32*)(&image[14]) = DIB_HEADER_SIZE;
     // Image Width
-    *(bits32*)(image + 18) = IMAGE_WIDTH;
+    *(bits32*)(&image[18]) = IMAGE_WIDTH;
     // Image Height
-    *(bits32*)(image + 22) = IMAGE_HEIGHT;
+    *(bits32*)(&image[22]) = IMAGE_HEIGHT;
     // Planes
-    *(bits16*)(image + 26) = 1;
+    *(bits16*)(&image[26]) = 1;
     // Bits per Pixel
-    *(bits16*)(image + 28) = PIXEL_SIZE * 8;
+    *(bits16*)(&image[28]) = PIXEL_SIZE * 8;
     // Compression
-    *(bits32*)(image + 30) = 0;
+    *(bits32*)(&image[30]) = 0;
     // Image Size
-    *(bits32*)(image + 34) = IMAGE_SIZE;
+    *(bits32*)(&image[34]) = IMAGE_SIZE;
     // X Pixels Per Meter
-    *(bits32*)(image + 38) = 0xB13;
+    *(bits32*)(&image[38]) = 0xB13;
     // Y Pixels Per Meter
-    *(bits32*)(image + 42) = 0xB13;
+    *(bits32*)(&image[42]) = 0xB13;
     // Color Table Color Count
-    *(bits32*)(image + 46) = 0;
+    *(bits32*)(&image[46]) = 0;
     // Important Color Count
-    *(bits32*)(image + 50) = 0;
+    *(bits32*)(&image[50]) = 0;
 }
 
 int escapeSteps(double inX, double inY) {
