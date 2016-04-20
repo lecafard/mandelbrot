@@ -25,7 +25,7 @@ unsigned char stepsToRed(int steps) {
 
 unsigned char stepsToGreen(int steps) {
     // Green component of nth color.
-    unsigned char greens[NUM_COLORS] = {66, 255, 0, 0, 0};
+    unsigned char greens[NUM_COLORS] = {23, 158, 252, 136, 2};
 
     unsigned char intensity = 0;
     if (steps == MAX_ITERATIONS) {
@@ -39,7 +39,7 @@ unsigned char stepsToGreen(int steps) {
 
 unsigned char stepsToBlue(int steps) {
     // Blue component of nth color.
-    unsigned char blues[NUM_COLORS] = {232, 158, 252, 136, 2};
+    unsigned char blues[NUM_COLORS] = {66, 255, 0, 0, 0};
 
     unsigned char intensity = 0;
     if (steps == MAX_ITERATIONS) {
